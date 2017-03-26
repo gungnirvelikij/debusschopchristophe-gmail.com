@@ -69,6 +69,7 @@
             this.afsluitenToolStripMenuItem.Name = "afsluitenToolStripMenuItem";
             this.afsluitenToolStripMenuItem.Size = new System.Drawing.Size(195, 22);
             this.afsluitenToolStripMenuItem.Text = "Afsluiten";
+            this.afsluitenToolStripMenuItem.Click += new System.EventHandler(this.afsluitenToolStripMenuItem_Click);
             // 
             // testknop1
             // 
