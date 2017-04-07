@@ -35,6 +35,7 @@
             this.afsluitenToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.testknop1 = new System.Windows.Forms.Button();
             this.testknop2 = new System.Windows.Forms.Button();
+            this.testknop3 = new System.Windows.Forms.Button();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -91,12 +92,23 @@
             this.testknop2.UseVisualStyleBackColor = true;
             this.testknop2.Click += new System.EventHandler(this.testknop2_Click);
             // 
+            // testknop3
+            // 
+            this.testknop3.Location = new System.Drawing.Point(229, 109);
+            this.testknop3.Name = "testknop3";
+            this.testknop3.Size = new System.Drawing.Size(75, 23);
+            this.testknop3.TabIndex = 3;
+            this.testknop3.Text = "startapplicatie";
+            this.testknop3.UseVisualStyleBackColor = true;
+            this.testknop3.Click += new System.EventHandler(this.testknop3_Click);
+            // 
             // windowMain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("$this.BackgroundImage")));
             this.ClientSize = new System.Drawing.Size(926, 427);
+            this.Controls.Add(this.testknop3);
             this.Controls.Add(this.testknop2);
             this.Controls.Add(this.testknop1);
             this.Controls.Add(this.menuStrip1);
@@ -120,6 +132,7 @@
         private System.Windows.Forms.ToolStripMenuItem afsluitenToolStripMenuItem;
         private System.Windows.Forms.Button testknop1;
         private System.Windows.Forms.Button testknop2;
+        private System.Windows.Forms.Button testknop3;
     }
 }
 

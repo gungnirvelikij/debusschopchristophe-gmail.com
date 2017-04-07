@@ -22,6 +22,8 @@ namespace Examenapplicatie
 
         private byte stateBackground;  // 0 = OK, 1 = NOK, 2 = really NOK
 
+        private string clientApplicationPath = "..\\..\\..\\Geogebra\\GeoGebra.exe";  // 3 niveau's terug: Examenapplicatie\Examenapplicatie\bin\Debug\'app'.exe
+
         //
         // Constructor
         //
@@ -58,6 +60,11 @@ namespace Examenapplicatie
         private void testknop2_Click(object sender, EventArgs e)
         {
             changeBackground(1);   //  NOK
+        }
+
+        private void testknop3_Click(object sender, EventArgs e)
+        {
+            startClientApplication();
         }
 
         private void afsluitenToolStripMenuItem_Click(object sender, EventArgs e)
@@ -105,6 +112,25 @@ namespace Examenapplicatie
                     break;
             }
             stateBackground = state;
+        }
+
+        // http://stackoverflow.com/questions/1112981/how-do-i-launch-application-one-from-another-in-c
+        private void startClientApplication()
+        {
+            try
+            {
+
+                Process clientProc = new Process();
+                clientProc.StartInfo.FileName = clientApplicationPath;
+                clientProc.EnableRaisingEvents = true;
+
+                clientProc.Start();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("An error occurred!!!: " + ex.Message);
+                return;
+            }
         }
 
         //http://stackoverflow.com/questions/97097/what-is-the-c-sharp-version-of-vb-nets-inputdialog
