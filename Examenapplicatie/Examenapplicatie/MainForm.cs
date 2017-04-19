@@ -69,7 +69,7 @@ namespace Examenapplicatie
 
         private void afsluitenToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            Application.Exit();
+            closeApplication();
         }
 
         //
@@ -114,6 +114,12 @@ namespace Examenapplicatie
             stateBackground = state;
         }
 
+        private void closeApplication()
+        {
+            WindowsKey.Enable();
+            Application.Exit();
+        }
+
         // http://stackoverflow.com/questions/1112981/how-do-i-launch-application-one-from-another-in-c
         private void startClientApplication()
         {
@@ -131,6 +137,7 @@ namespace Examenapplicatie
                 Console.WriteLine("An error occurred!!!: " + ex.Message);
                 return;
             }
+            WindowsKey.Disable();
         }
 
         //http://stackoverflow.com/questions/97097/what-is-the-c-sharp-version-of-vb-nets-inputdialog
