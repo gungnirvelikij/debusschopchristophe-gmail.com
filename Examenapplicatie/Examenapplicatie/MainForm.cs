@@ -116,7 +116,7 @@ namespace Examenapplicatie
 
         private void closeApplication()
         {
-            WindowsKey.Enable();
+            WindowsTaskbarEnable();
             Application.Exit();
         }
 
@@ -131,13 +131,13 @@ namespace Examenapplicatie
                 clientProc.EnableRaisingEvents = true;
 
                 clientProc.Start();
+                WindowsTaskbarDisable();
             }
             catch (Exception ex)
             {
                 Console.WriteLine("An error occurred!!!: " + ex.Message);
                 return;
             }
-            WindowsKey.Disable();
         }
 
         //http://stackoverflow.com/questions/97097/what-is-the-c-sharp-version-of-vb-nets-inputdialog
@@ -173,6 +173,16 @@ namespace Examenapplicatie
             return false;
         }
 
+        private void WindowsTaskbarDisable()
+        {
+            ShowWindow(FindWindow("Shell_TrayWnd", ""), SW_HIDE);
+        }
+
+        private void WindowsTaskbarEnable()
+        {
+            ShowWindow(FindWindow("Shell_TrayWnd", ""), SW_SHOW);
+        }
+
 
 
         // http://stackoverflow.com/questions/7162834/determine-if-current-application-is-activated-has-focus
@@ -197,5 +207,17 @@ namespace Examenapplicatie
 
         [DllImport("user32.dll", CharSet = CharSet.Auto, SetLastError = true)]
         private static extern int GetWindowThreadProcessId(IntPtr handle, out int processId);
+
+        [DllImport("user32.dll")]
+        private static extern int FindWindow(string className, string windowText);
+
+        [DllImport("user32.dll")]
+        private static extern int ShowWindow(int hwnd, int command);
+
+        private const int SW_HIDE = 0;
+        private const int SW_SHOW = 1;
+
+
+
     }
 }
