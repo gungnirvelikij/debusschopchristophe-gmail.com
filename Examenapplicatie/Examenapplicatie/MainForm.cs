@@ -37,8 +37,10 @@ namespace Examenapplicatie
         {
             InitializeComponent();
 
-            Thread checkThread = new Thread(new ThreadStart(CheckLoop));
-            checkThread.Start();
+            Thread checkThread = new Thread(new ThreadStart(ConstantLoop)); 
+            checkThread.Start();             // create checking loop for checking if application or child has focus
+
+            ForceToBackground();   // forcing host application to background
         }
 
         //
@@ -58,6 +60,11 @@ namespace Examenapplicatie
                     changeBackground(2);  // student tried to cheat fill in password - background to double danger
                 }
             }
+        }
+
+        private void windowMain_Activated(object sender, EventArgs e)
+        {
+            ForceToBackground();
         }
 
         private void testknop1_Click(object sender, EventArgs e)
@@ -129,6 +136,11 @@ namespace Examenapplicatie
             Application.Exit();
         }
 
+        private void ForceToBackground()  // force host application to background
+        {
+            SetWindowPos(Handle, HWND_BOTTOM, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE | SWP_NOACTIVATE);
+        }
+
         // http://stackoverflow.com/questions/1112981/how-do-i-launch-application-one-from-another-in-c
         private void startClientApplication()
         {
@@ -192,12 +204,8 @@ namespace Examenapplicatie
             ShowWindow(FindWindow("Shell_TrayWnd", ""), SW_SHOW);
         }
 
-        private void CheckLoop()
+        private void ConstantLoop()
         {
-           
-        // einde testlabel
-
-        
             while (applicationRunning)  // constant checking
             {
                 if (!ApplicationIsActivated()) 
@@ -251,7 +259,13 @@ namespace Examenapplicatie
         private const int SW_HIDE = 0;
         private const int SW_SHOW = 1;
 
+        // import DLL for forcing window to background
+        [DllImport("user32.dll")]
+        static extern bool SetWindowPos(IntPtr hWnd, IntPtr hWndInsertAfter, int X, int Y, int cx, int cy, uint uFlags);
 
-
+        static readonly IntPtr HWND_BOTTOM = new IntPtr(1);
+        const UInt32 SWP_NOSIZE = 0x0001;
+        const UInt32 SWP_NOMOVE = 0x0002;
+        const UInt32 SWP_NOACTIVATE = 0x0010;
     }
 }
