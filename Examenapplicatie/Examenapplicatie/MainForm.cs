@@ -8,6 +8,7 @@ using System.Linq;
 using System.Net.Http.Headers;
 using System.Runtime.InteropServices;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using Examenapplicatie.Properties;
@@ -20,6 +21,10 @@ namespace Examenapplicatie
         // Fields
         //
 
+
+        private int teller = 0;
+        private bool applicationRunning = true;
+
         private byte stateBackground;  // 0 = OK, 1 = NOK, 2 = really NOK
 
         private string clientApplicationPath = "..\\..\\..\\Geogebra\\GeoGebra.exe";  // 3 niveau's terug: Examenapplicatie\Examenapplicatie\bin\Debug\'app'.exe
@@ -31,6 +36,9 @@ namespace Examenapplicatie
         public windowMain()
         {
             InitializeComponent();
+
+            Thread checkThread = new Thread(new ThreadStart(CheckLoop));
+            checkThread.Start();
         }
 
         //
@@ -83,7 +91,7 @@ namespace Examenapplicatie
                 case 0:  // state is OK -> normal background
                     try
                     {
-                        ActiveForm.BackgroundImage = Resources.backgroundOK;
+                        this.BackgroundImage = Resources.backgroundOK;
                     }
                     catch (System.IO.FileNotFoundException)
                     {
@@ -93,7 +101,7 @@ namespace Examenapplicatie
                 case 1:  // state is OK -> normal background
                     try
                     {
-                        ActiveForm.BackgroundImage = Resources.backgroundNOK;
+                        this.BackgroundImage = Resources.backgroundNOK;
                     }
                     catch (System.IO.FileNotFoundException)
                     {
@@ -103,7 +111,7 @@ namespace Examenapplicatie
                 case 2:  // state is OK -> normal background
                     try
                     {
-                        ActiveForm.BackgroundImage = Resources.backgroundReallyNOK;
+                        this.BackgroundImage = Resources.backgroundReallyNOK;
                     }
                     catch (System.IO.FileNotFoundException)
                     {
@@ -116,6 +124,7 @@ namespace Examenapplicatie
 
         private void closeApplication()
         {
+            applicationRunning = false;
             WindowsTaskbarEnable();
             Application.Exit();
         }
@@ -183,7 +192,21 @@ namespace Examenapplicatie
             ShowWindow(FindWindow("Shell_TrayWnd", ""), SW_SHOW);
         }
 
+        private void CheckLoop()
+        {
+           
+        // einde testlabel
 
+        
+            while (applicationRunning)  // constant checking
+            {
+                if (!ApplicationIsActivated()) 
+                {
+                    changeBackground(1);  // change background to NOK
+                }
+                Thread.Sleep(5000); // sleep for 5 seconds avoiding computer overcharge
+            }
+        }
 
         // http://stackoverflow.com/questions/7162834/determine-if-current-application-is-activated-has-focus
         /// <summary>Returns true if the current application has focus, false otherwise</summary>
