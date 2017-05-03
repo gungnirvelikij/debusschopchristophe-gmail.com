@@ -61,6 +61,15 @@ namespace Examenapplicatie.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Javaw.
+        /// </summary>
+        internal static string applicationName {
+            get {
+                return ResourceManager.GetString("applicationName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
         internal static System.Drawing.Bitmap backgroundNOK {
@@ -87,6 +96,15 @@ namespace Examenapplicatie.Properties {
             get {
                 object obj = ResourceManager.GetObject("backgroundReallyNOK", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 2.
+        /// </summary>
+        internal static string loopDuration {
+            get {
+                return ResourceManager.GetString("loopDuration", resourceCulture);
             }
         }
         

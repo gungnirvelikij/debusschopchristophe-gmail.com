@@ -91,7 +91,7 @@ namespace Examenapplicatie
                 case 0:  // state is OK -> normal background
                     try
                     {
-                        this.BackgroundImage = Resources.backgroundOK;
+                        BackgroundImage = Resources.backgroundOK;
                     }
                     catch (System.IO.FileNotFoundException)
                     {
@@ -101,7 +101,7 @@ namespace Examenapplicatie
                 case 1:  // state is OK -> normal background
                     try
                     {
-                        this.BackgroundImage = Resources.backgroundNOK;
+                        BackgroundImage = Resources.backgroundNOK;
                     }
                     catch (System.IO.FileNotFoundException)
                     {
@@ -111,7 +111,7 @@ namespace Examenapplicatie
                 case 2:  // state is OK -> normal background
                     try
                     {
-                        this.BackgroundImage = Resources.backgroundReallyNOK;
+                        BackgroundImage = Resources.backgroundReallyNOK;
                     }
                     catch (System.IO.FileNotFoundException)
                     {
@@ -204,7 +204,7 @@ namespace Examenapplicatie
                 {
                     changeBackground(1);  // change background to NOK
                 }
-                Thread.Sleep(5000); // sleep for 5 seconds avoiding computer overcharge
+                Thread.Sleep(Int32.Parse(Resources.loopDuration)*1000); // sleep for amount of seconds determined in resources to avoid computer overcharge
             }
         }
 
@@ -212,17 +212,28 @@ namespace Examenapplicatie
         /// <summary>Returns true if the current application has focus, false otherwise</summary>
         private static bool ApplicationIsActivated()
         {
+            bool activated = false;
             var activatedHandle = GetForegroundWindow();
             if (activatedHandle == IntPtr.Zero)
             {
                 return false;       // No window is currently activated
             }
 
-            var procId = Process.GetCurrentProcess().Id;
+            int procId = Process.GetCurrentProcess().Id;
+            Process[] childProcesses = Process.GetProcessesByName(Resources.applicationName); // all instances of the 
+
             int activeProcId;
             GetWindowThreadProcessId(activatedHandle, out activeProcId);
 
-            return activeProcId == procId;
+            activated = activeProcId == procId;  // check if host application is the active window
+            for (int i = 0; i < childProcesses.Length; i++)   // if not host, check if instance of host application is active window
+            {
+                if (childProcesses[i].Id== activeProcId)
+                {
+                    activated = true;
+                }
+            }
+            return activated;
         }
 
         [DllImport("user32.dll", CharSet = CharSet.Auto, ExactSpelling = true)]
