@@ -36,6 +36,7 @@
             this.testknop1 = new System.Windows.Forms.Button();
             this.testknop2 = new System.Windows.Forms.Button();
             this.testknop3 = new System.Windows.Forms.Button();
+            this.lbltest = new System.Windows.Forms.Label();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -102,12 +103,22 @@
             this.testknop3.UseVisualStyleBackColor = true;
             this.testknop3.Click += new System.EventHandler(this.testknop3_Click);
             // 
+            // lbltest
+            // 
+            this.lbltest.AutoSize = true;
+            this.lbltest.Location = new System.Drawing.Point(313, 220);
+            this.lbltest.Name = "lbltest";
+            this.lbltest.Size = new System.Drawing.Size(35, 13);
+            this.lbltest.TabIndex = 4;
+            this.lbltest.Text = "label1";
+            // 
             // windowMain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("$this.BackgroundImage")));
             this.ClientSize = new System.Drawing.Size(926, 427);
+            this.Controls.Add(this.lbltest);
             this.Controls.Add(this.testknop3);
             this.Controls.Add(this.testknop2);
             this.Controls.Add(this.testknop1);
@@ -134,6 +145,7 @@
         private System.Windows.Forms.Button testknop1;
         private System.Windows.Forms.Button testknop2;
         private System.Windows.Forms.Button testknop3;
+        private System.Windows.Forms.Label lbltest;
     }
 }
 

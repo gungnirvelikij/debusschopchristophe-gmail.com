@@ -233,13 +233,19 @@ namespace Examenapplicatie
             int activeProcId;
             GetWindowThreadProcessId(activatedHandle, out activeProcId);
 
-            activated = activeProcId == procId;  // check if host application is the active window
+            activated = activeProcId == procId; // check if host application is the active window
+
             for (int i = 0; i < childProcesses.Length; i++)   // if not host, check if instance of host application is active window
             {
                 if (childProcesses[i].Id== activeProcId)
                 {
                     activated = true;
                 }
+            }
+
+            if (!activated)
+            {
+                MessageBox.Show(activeProcId.ToString());
             }
             return activated;
         }
