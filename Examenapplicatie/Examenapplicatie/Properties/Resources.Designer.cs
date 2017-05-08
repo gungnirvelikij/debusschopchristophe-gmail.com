@@ -61,11 +61,20 @@ namespace Examenapplicatie.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Geogebra.exe.
+        /// </summary>
+        internal static string applicationFileName {
+            get {
+                return ResourceManager.GetString("applicationFileName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Javaw.
         /// </summary>
-        internal static string applicationName {
+        internal static string applicationProcessName {
             get {
-                return ResourceManager.GetString("applicationName", resourceCulture);
+                return ResourceManager.GetString("applicationProcessName", resourceCulture);
             }
         }
         
@@ -96,6 +105,16 @@ namespace Examenapplicatie.Properties {
             get {
                 object obj = ResourceManager.GetObject("backgroundReallyNOK", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] clientapplication {
+            get {
+                object obj = ResourceManager.GetObject("clientapplication", resourceCulture);
+                return ((byte[])(obj));
             }
         }
         

@@ -4,6 +4,8 @@ using System.ComponentModel;
 using System.Data;
 using System.Diagnostics;
 using System.Drawing;
+using System.IO;
+using System.IO.Compression;
 using System.Linq;
 using System.Net.Http.Headers;
 using System.Runtime.InteropServices;
@@ -28,6 +30,8 @@ namespace Examenapplicatie
         private byte stateBackground;  // 0 = OK, 1 = NOK, 2 = really NOK
 
         private string clientApplicationPath = "..\\..\\..\\Geogebra\\GeoGebra.exe";  // 3 niveau's terug: Examenapplicatie\Examenapplicatie\bin\Debug\'app'.exe
+        private string tempPath;
+        private string clientPath = "\\App\\" + Resources.applicationFileName;  // create client path name
 
         //
         // Constructor
@@ -36,6 +40,13 @@ namespace Examenapplicatie
         public windowMain()
         {
             InitializeComponent();
+
+            tempPath = Path.GetTempPath(); // create temp path string 
+            tempPath = Path.Combine(tempPath, DateTime.Now.ToString("yyyyMdHHmmss")); // create unique folder in tempfolder
+            Directory.CreateDirectory(tempPath);
+            File.WriteAllBytes(tempPath+"\\app.zip", Resources.clientapplication); // copy zip into temp folder
+            string installpath = Path.Combine(tempPath, "App"); // create a folder to store host application in
+            ZipFile.ExtractToDirectory(tempPath + "\\app.zip", installpath); // extract zipfile with exe to tempfolder\App   exe has to be in upper directory of zipfile
 
             Thread checkThread = new Thread(new ThreadStart(ConstantLoop)); 
             checkThread.Start();             // create checking loop for checking if application or child has focus
@@ -132,6 +143,7 @@ namespace Examenapplicatie
         private void closeApplication()
         {
             applicationRunning = false;
+            Directory.Delete(tempPath, true);  // delete temp folder
             WindowsTaskbarEnable();
             Application.Exit();
         }
@@ -148,7 +160,7 @@ namespace Examenapplicatie
             {
 
                 Process clientProc = new Process();
-                clientProc.StartInfo.FileName = clientApplicationPath;
+                clientProc.StartInfo.FileName = tempPath+clientPath;
                 clientProc.EnableRaisingEvents = true;
 
                 clientProc.Start();
@@ -228,7 +240,7 @@ namespace Examenapplicatie
             }
 
             int procId = Process.GetCurrentProcess().Id;
-            Process[] childProcesses = Process.GetProcessesByName(Resources.applicationName); // all instances of the 
+            Process[] childProcesses = Process.GetProcessesByName(Resources.applicationProcessName); // all instances of the 
 
             int activeProcId;
             GetWindowThreadProcessId(activatedHandle, out activeProcId);
@@ -243,7 +255,8 @@ namespace Examenapplicatie
                 }
             }
 
-            if (!activated)
+            //TODO if verwijderen
+            if (!activated) 
             {
                 MessageBox.Show(activeProcId.ToString());
             }
