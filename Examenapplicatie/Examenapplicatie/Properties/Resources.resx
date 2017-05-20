@@ -138,6 +138,12 @@
   <data name="clientapplication" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\geogebra.zip;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
+  <data name="disableInternet" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\disableInternet.vbs;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="enableInternet" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\enableInternet.vbs;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
   <data name="loopDuration" xml:space="preserve">
     <value>2</value>
     <comment>seconds before new loop is launched</comment>

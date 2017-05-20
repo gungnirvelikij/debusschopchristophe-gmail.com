@@ -119,6 +119,26 @@ namespace Examenapplicatie.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] disableInternet {
+            get {
+                object obj = ResourceManager.GetObject("disableInternet", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] enableInternet {
+            get {
+                object obj = ResourceManager.GetObject("enableInternet", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to 2.
         /// </summary>
         internal static string loopDuration {

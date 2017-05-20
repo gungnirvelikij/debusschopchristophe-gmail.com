@@ -39,11 +39,29 @@ namespace Examenapplicatie
 
         public windowMain()
         {
-            InitializeComponent();
-
+            // create temppath
             tempPath = Path.GetTempPath(); // create temp path string 
             tempPath = Path.Combine(tempPath, DateTime.Now.ToString("yyyyMdHHmmss")); // create unique folder in tempfolder
             Directory.CreateDirectory(tempPath);
+
+
+            // close services
+            // disable internet: create vbs file in temp folder
+            File.WriteAllBytes(tempPath + "\\disableipv6.vbs", Resources.disableInternet); // copy zip into temp folder
+            // disable internet: execute vbs file in temp folder
+            Process scriptProc = new Process();
+            scriptProc.StartInfo.FileName = tempPath + "\\disableipv6.vbs";
+            scriptProc.Start();
+            scriptProc.WaitForExit();
+            scriptProc.Close();
+
+
+            // initialize main window
+
+            InitializeComponent();
+            Cursor.Current = Cursors.AppStarting;  // create loading cursor
+
+            
             File.WriteAllBytes(tempPath+"\\app.zip", Resources.clientapplication); // copy zip into temp folder
             string installpath = Path.Combine(tempPath, "App"); // create a folder to store host application in
             ZipFile.ExtractToDirectory(tempPath + "\\app.zip", installpath); // extract zipfile with exe to tempfolder\App   exe has to be in upper directory of zipfile
@@ -52,6 +70,7 @@ namespace Examenapplicatie
             checkThread.Start();             // create checking loop for checking if application or child has focus
 
             ForceToBackground();   // forcing host application to background
+            Cursor.Current = Cursors.Default;
         }
 
         //
@@ -143,8 +162,22 @@ namespace Examenapplicatie
         private void closeApplication()
         {
             applicationRunning = false;
-            Directory.Delete(tempPath, true);  // delete temp folder
+
+            //restart services
             WindowsTaskbarEnable();
+
+            // enable internet: create vbs file in temp folder
+            File.WriteAllBytes(tempPath + "\\enableipv6.vbs", Resources.enableInternet);
+
+            // enable internet: execute vbs file in temp folder
+            Process scriptProc = new Process();
+            scriptProc.StartInfo.FileName = tempPath + "\\enableipv6.vbs";
+            scriptProc.Start();
+            scriptProc.WaitForExit();
+            scriptProc.Close();
+            
+            Directory.Delete(tempPath, true);  // delete temp folder
+            
             Application.Exit();
         }
 
@@ -158,7 +191,6 @@ namespace Examenapplicatie
         {
             try
             {
-
                 Process clientProc = new Process();
                 clientProc.StartInfo.FileName = tempPath+clientPath;
                 clientProc.EnableRaisingEvents = true;
@@ -255,7 +287,7 @@ namespace Examenapplicatie
                 }
             }
 
-            //TODO if verwijderen
+            //TODO if verwijderen   -> toont welk process actief is wanneer achtergrond verandert
             if (!activated) 
             {
                 MessageBox.Show(activeProcId.ToString());
