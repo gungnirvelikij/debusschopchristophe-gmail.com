@@ -218,6 +218,7 @@ namespace Examenapplicatie
             TextBox textBox = new TextBox();
             textBox.Size = new Size(size.Width - 10, 23);
             textBox.Location = new Point(5, 5);
+            textBox.UseSystemPasswordChar = true; // hide password when typing
             inputBox.Controls.Add(textBox);
 
             Button btn_passwordinputOK = new Button();
