@@ -1,17 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.IO.Compression;
-using System.Linq;
-using System.Net.Http.Headers;
 using System.Runtime.InteropServices;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using Examenapplicatie.Properties;
 using Microsoft.Win32;
@@ -78,19 +71,37 @@ namespace Examenapplicatie
                         if (o.ToString() == DateTime.Now.ToString("yyyyMd"))
                         {
                             changeBackground(1);
+                            key.SetValue("Log", key.GetValue("Log") + " / !!!" + DateTime.Now.ToString("yyyyMdHHmmss"), RegistryValueKind.String); //add current timestamp to log with exlamation marks to show multiple times opened this day
+                            key.Close();
                         }
+                    }
+                    else
+                    {
+                        // write to registry to show the application has already been started on this machine.
+                        RegistryKey lastTimeUsedRegistryKey = Registry.CurrentUser.CreateSubKey("LastTimeUsed");
+                        lastTimeUsedRegistryKey.SetValue("Used", DateTime.Now.ToString("yyyyMd"));
+                        lastTimeUsedRegistryKey.SetValue("Log", lastTimeUsedRegistryKey.GetValue("Log") + " / " + DateTime.Now.ToString("yyyyMdHHmmss"), RegistryValueKind.String); //add current timestamp to log    
+                        lastTimeUsedRegistryKey.Close();
                     }
                 }
             }
-            catch (Exception ex)  //just for demonstration...it's always best to handle specific exceptions
+            catch (Exception ex)  
             {
                 //
             }
 
             // write to registry to show the application has already been started on this machine.
-            RegistryKey lastTimeUsedRegistryKey = Registry.CurrentUser.CreateSubKey("LastTimeUsed");
-            lastTimeUsedRegistryKey.SetValue("Used", DateTime.Now.ToString("yyyyMd"));
-            lastTimeUsedRegistryKey.Close();
+
+
+            foreach (var process in Process.GetProcessesByName(Resources.applicationProcessName))  // kill all processes with the same name as the child beforehand
+            {
+                process.Kill();
+            }
+
+            Process p = Process.Start(tempPath + clientPath);  // start child application
+            Thread.Sleep(10000); // give the application enough time to completely load, this has to be finished by the time the next line is read
+            Process[] childProcesses = Process.GetProcessesByName(Resources.applicationProcessName);
+            SetParent(childProcesses[0].MainWindowHandle, panel_childApplication.Handle);
 
             checkThread = new Thread(new ThreadStart(ConstantLoop));
             checkThread.Start(); // create checking loop for checking if application or child has focus
@@ -116,17 +127,6 @@ namespace Examenapplicatie
                     changeBackground(2); // student tried to cheat fill in password - background to double danger
                 }
             }
-        }
-
-        private void ApplicatieOpstarten_Click(object sender, EventArgs e)
-        {
-            if (stateBackground == 0)
-            {
-                startClientApplication();
-            }
-            
-            ForceToBackground();
-                // make sure the main app is forced to the background to prevent previous instances of child app from being hidden
         }
 
         private void afsluitenToolStripMenuItem_Click(object sender, EventArgs e)
@@ -272,24 +272,6 @@ namespace Examenapplicatie
             }
         }
 
-        // http://stackoverflow.com/questions/1112981/how-do-i-launch-application-one-from-another-in-c
-        private void startClientApplication()
-        {
-            try
-            {
-                Process clientProc = new Process();
-                clientProc.StartInfo.FileName = tempPath+clientPath;
-                clientProc.EnableRaisingEvents = true;
-
-                clientProc.Start();
-                WindowsTaskbarDisable();
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine("An error occurred!!!: " + ex.Message);
-            }
-        }
-
         //http://stackoverflow.com/questions/97097/what-is-the-c-sharp-version-of-vb-nets-inputdialog
         private static bool showPasswordInputBox()
         {
@@ -367,5 +349,10 @@ namespace Examenapplicatie
         const UInt32 SWP_NOSIZE = 0x0001;
         const UInt32 SWP_NOMOVE = 0x0002;
         const UInt32 SWP_NOACTIVATE = 0x0010;
+
+        // http://stackoverflow.com/questions/1112981/how-do-i-launch-application-one-from-another-in-c
+        //DLL for embedding child app in panel
+        [DllImport("user32.dll")]
+        static extern IntPtr SetParent(IntPtr hWndChild, IntPtr hWndNewParent);
     }
 }
