@@ -14,6 +14,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using Examenapplicatie.Properties;
+using Microsoft.Win32;
 
 namespace Examenapplicatie
 {
@@ -64,12 +65,36 @@ namespace Examenapplicatie
             File.WriteAllBytes(tempPath + "\\app.zip", Resources.clientapplication); // copy zip into temp folder
             string installpath = Path.Combine(tempPath, "App"); // create a folder to store host application in
             ZipFile.ExtractToDirectory(tempPath + "\\app.zip", installpath);
-                // extract zipfile with exe to tempfolder\App   exe has to be in upper directory of zipfile
+            // extract zipfile with exe to tempfolder\App   exe has to be in upper directory of zipfile
+
+            //check if this application has already been used today -> if yes: start with NOK background
+            try
+            {
+                using (RegistryKey key = Registry.CurrentUser.OpenSubKey("LastTimeUsed"))
+                {
+                    if (key != null)
+                    {
+                        Object o = key.GetValue("Used");
+                        if (o.ToString() == DateTime.Now.ToString("yyyyMd"))
+                        {
+                            changeBackground(1);
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)  //just for demonstration...it's always best to handle specific exceptions
+            {
+                //
+            }
+
+            // write to registry to show the application has already been started on this machine.
+            RegistryKey lastTimeUsedRegistryKey = Registry.CurrentUser.CreateSubKey("LastTimeUsed");
+            lastTimeUsedRegistryKey.SetValue("Used", DateTime.Now.ToString("yyyyMd"));
+            lastTimeUsedRegistryKey.Close();
 
             checkThread = new Thread(new ThreadStart(ConstantLoop));
             checkThread.Start(); // create checking loop for checking if application or child has focus
 
-            changeBackground(1); // start at 1 to prefent student from closing and reopening
             Cursor.Current = Cursors.Default;
         }
 
