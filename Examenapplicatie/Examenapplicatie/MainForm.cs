@@ -50,11 +50,11 @@ namespace Examenapplicatie
                 // disable internet: create vbs file in temp folder
             File.WriteAllBytes(tempPath + "\\disableip.vbs", Resources.disableInternet); // copy zip into temp folder
                 // disable internet: execute vbs file in temp folder
-            Process scriptProc = new Process();
-            scriptProc.StartInfo.FileName = tempPath + "\\disableip.vbs";
-            scriptProc.Start();
-            scriptProc.WaitForExit();
-            scriptProc.Close();
+            //Process scriptProc = new Process();
+            //scriptProc.StartInfo.FileName = tempPath + "\\disableip.vbs";
+            //scriptProc.Start();
+            //scriptProc.WaitForExit();
+            //scriptProc.Close();
 
             // initialize main window
 
