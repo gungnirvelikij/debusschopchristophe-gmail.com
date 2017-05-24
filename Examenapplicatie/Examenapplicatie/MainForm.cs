@@ -27,7 +27,7 @@ namespace Examenapplicatie
 
         private bool applicationRunning = true;
 
-        private byte stateBackground; // 0 = OK, 1 = NOK, 2 = really NOK
+        private byte stateBackground; // 0 = OK, 1 = NOK, 2 = really NOK  
 
         private string tempPath;
         private string clientPath = "\\App\\" + Resources.applicationFileName; // create client path name
@@ -48,10 +48,10 @@ namespace Examenapplicatie
 
             // close services
                 // disable internet: create vbs file in temp folder
-            File.WriteAllBytes(tempPath + "\\disableipv6.vbs", Resources.disableInternet); // copy zip into temp folder
+            File.WriteAllBytes(tempPath + "\\disableip.vbs", Resources.disableInternet); // copy zip into temp folder
                 // disable internet: execute vbs file in temp folder
             Process scriptProc = new Process();
-            scriptProc.StartInfo.FileName = tempPath + "\\disableipv6.vbs";
+            scriptProc.StartInfo.FileName = tempPath + "\\disableip.vbs";
             scriptProc.Start();
             scriptProc.WaitForExit();
             scriptProc.Close();
@@ -61,7 +61,6 @@ namespace Examenapplicatie
             InitializeComponent();
             Cursor.Current = Cursors.AppStarting; // create loading cursor
 
-
             File.WriteAllBytes(tempPath + "\\app.zip", Resources.clientapplication); // copy zip into temp folder
             string installpath = Path.Combine(tempPath, "App"); // create a folder to store host application in
             ZipFile.ExtractToDirectory(tempPath + "\\app.zip", installpath);
@@ -70,7 +69,7 @@ namespace Examenapplicatie
             checkThread = new Thread(new ThreadStart(ConstantLoop));
             checkThread.Start(); // create checking loop for checking if application or child has focus
 
-            ForceToBackground(); // forcing host application to background
+            changeBackground(1); // start at 1 to prefent student from closing and reopening
             Cursor.Current = Cursors.Default;
         }
 
@@ -96,7 +95,11 @@ namespace Examenapplicatie
 
         private void ApplicatieOpstarten_Click(object sender, EventArgs e)
         {
-            startClientApplication();
+            if (stateBackground == 0)
+            {
+                startClientApplication();
+            }
+            
             ForceToBackground();
                 // make sure the main app is forced to the background to prevent previous instances of child app from being hidden
         }

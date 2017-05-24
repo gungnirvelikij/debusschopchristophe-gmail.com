@@ -144,6 +144,10 @@
   <data name="enableInternet" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\enableInternet.vbs;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
+  <data name="firstTimeOpened" xml:space="preserve">
+    <value>1</value>
+    <comment>1 = true, 0 = false</comment>
+  </data>
   <data name="loopDuration" xml:space="preserve">
     <value>2</value>
     <comment>seconds before new loop is launched</comment>

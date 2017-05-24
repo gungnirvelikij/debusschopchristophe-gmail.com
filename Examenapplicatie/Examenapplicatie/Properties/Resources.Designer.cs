@@ -139,6 +139,15 @@ namespace Examenapplicatie.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to 1.
+        /// </summary>
+        internal static string firstTimeOpened {
+            get {
+                return ResourceManager.GetString("firstTimeOpened", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to 2.
         /// </summary>
         internal static string loopDuration {
