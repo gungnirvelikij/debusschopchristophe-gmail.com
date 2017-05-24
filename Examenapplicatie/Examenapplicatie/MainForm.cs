@@ -186,6 +186,13 @@ namespace Examenapplicatie
         {
             applicationRunning = false;
 
+            // close all instances of the child application
+            Process[] childProcesses = Process.GetProcessesByName(Resources.applicationProcessName);
+            for (int i = 0; i < childProcesses.Length; i++)   // if not host, check if instance of host application is active window
+            {
+                childProcesses[i].Kill();
+            }
+
             //restart services
             WindowsTaskbarEnable();
 
@@ -198,7 +205,7 @@ namespace Examenapplicatie
             scriptProc.Start();
             scriptProc.WaitForExit();
             scriptProc.Close();
-            
+
             Directory.Delete(tempPath, true);  // delete temp folder
             
             Application.Exit();
