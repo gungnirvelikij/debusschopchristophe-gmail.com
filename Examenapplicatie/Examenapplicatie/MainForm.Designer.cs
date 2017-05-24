@@ -31,12 +31,9 @@
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(windowMain));
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.startToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.applicatieStartenToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.achtergrondHerstellenToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.afsluitenToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.testknop1 = new System.Windows.Forms.Button();
-            this.testknop2 = new System.Windows.Forms.Button();
-            this.testknop3 = new System.Windows.Forms.Button();
-            this.lbltest = new System.Windows.Forms.Label();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -53,11 +50,19 @@
             // startToolStripMenuItem
             // 
             this.startToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.applicatieStartenToolStripMenuItem,
             this.achtergrondHerstellenToolStripMenuItem,
             this.afsluitenToolStripMenuItem});
             this.startToolStripMenuItem.Name = "startToolStripMenuItem";
             this.startToolStripMenuItem.Size = new System.Drawing.Size(43, 20);
             this.startToolStripMenuItem.Text = "Start";
+            // 
+            // applicatieStartenToolStripMenuItem
+            // 
+            this.applicatieStartenToolStripMenuItem.Name = "applicatieStartenToolStripMenuItem";
+            this.applicatieStartenToolStripMenuItem.Size = new System.Drawing.Size(195, 22);
+            this.applicatieStartenToolStripMenuItem.Text = "Applicatie starten";
+            this.applicatieStartenToolStripMenuItem.Click += new System.EventHandler(this.ApplicatieOpstarten_Click);
             // 
             // achtergrondHerstellenToolStripMenuItem
             // 
@@ -73,55 +78,12 @@
             this.afsluitenToolStripMenuItem.Text = "Afsluiten";
             this.afsluitenToolStripMenuItem.Click += new System.EventHandler(this.afsluitenToolStripMenuItem_Click);
             // 
-            // testknop1
-            // 
-            this.testknop1.Location = new System.Drawing.Point(347, 146);
-            this.testknop1.Name = "testknop1";
-            this.testknop1.Size = new System.Drawing.Size(75, 23);
-            this.testknop1.TabIndex = 1;
-            this.testknop1.Text = "OK";
-            this.testknop1.UseVisualStyleBackColor = true;
-            this.testknop1.Click += new System.EventHandler(this.testknop1_Click);
-            // 
-            // testknop2
-            // 
-            this.testknop2.Location = new System.Drawing.Point(462, 146);
-            this.testknop2.Name = "testknop2";
-            this.testknop2.Size = new System.Drawing.Size(75, 23);
-            this.testknop2.TabIndex = 2;
-            this.testknop2.Text = "NOK";
-            this.testknop2.UseVisualStyleBackColor = true;
-            this.testknop2.Click += new System.EventHandler(this.testknop2_Click);
-            // 
-            // testknop3
-            // 
-            this.testknop3.Location = new System.Drawing.Point(229, 109);
-            this.testknop3.Name = "testknop3";
-            this.testknop3.Size = new System.Drawing.Size(75, 23);
-            this.testknop3.TabIndex = 3;
-            this.testknop3.Text = "startapplicatie";
-            this.testknop3.UseVisualStyleBackColor = true;
-            this.testknop3.Click += new System.EventHandler(this.testknop3_Click);
-            // 
-            // lbltest
-            // 
-            this.lbltest.AutoSize = true;
-            this.lbltest.Location = new System.Drawing.Point(313, 220);
-            this.lbltest.Name = "lbltest";
-            this.lbltest.Size = new System.Drawing.Size(35, 13);
-            this.lbltest.TabIndex = 4;
-            this.lbltest.Text = "label1";
-            // 
             // windowMain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("$this.BackgroundImage")));
             this.ClientSize = new System.Drawing.Size(926, 427);
-            this.Controls.Add(this.lbltest);
-            this.Controls.Add(this.testknop3);
-            this.Controls.Add(this.testknop2);
-            this.Controls.Add(this.testknop1);
             this.Controls.Add(this.menuStrip1);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
             this.MainMenuStrip = this.menuStrip1;
@@ -142,10 +104,7 @@
         private System.Windows.Forms.ToolStripMenuItem startToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem achtergrondHerstellenToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem afsluitenToolStripMenuItem;
-        private System.Windows.Forms.Button testknop1;
-        private System.Windows.Forms.Button testknop2;
-        private System.Windows.Forms.Button testknop3;
-        private System.Windows.Forms.Label lbltest;
+        private System.Windows.Forms.ToolStripMenuItem applicatieStartenToolStripMenuItem;
     }
 }
 

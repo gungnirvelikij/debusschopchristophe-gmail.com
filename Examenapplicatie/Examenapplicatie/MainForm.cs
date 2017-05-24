@@ -33,6 +33,9 @@ namespace Examenapplicatie
         private string tempPath;
         private string clientPath = "\\App\\" + Resources.applicationFileName;  // create client path name
 
+        private Thread checkThread;
+        private Thread keyhookThread;
+
         //
         // Constructor
         //
@@ -44,7 +47,6 @@ namespace Examenapplicatie
             tempPath = Path.Combine(tempPath, DateTime.Now.ToString("yyyyMdHHmmss")); // create unique folder in tempfolder
             Directory.CreateDirectory(tempPath);
 
-
             // close services
             // disable internet: create vbs file in temp folder
             File.WriteAllBytes(tempPath + "\\disableipv6.vbs", Resources.disableInternet); // copy zip into temp folder
@@ -54,7 +56,6 @@ namespace Examenapplicatie
             scriptProc.Start();
             scriptProc.WaitForExit();
             scriptProc.Close();
-
 
             // initialize main window
 
@@ -66,7 +67,7 @@ namespace Examenapplicatie
             string installpath = Path.Combine(tempPath, "App"); // create a folder to store host application in
             ZipFile.ExtractToDirectory(tempPath + "\\app.zip", installpath); // extract zipfile with exe to tempfolder\App   exe has to be in upper directory of zipfile
 
-            Thread checkThread = new Thread(new ThreadStart(ConstantLoop)); 
+            checkThread = new Thread(new ThreadStart(ConstantLoop)); 
             checkThread.Start();             // create checking loop for checking if application or child has focus
 
             ForceToBackground();   // forcing host application to background
@@ -92,22 +93,9 @@ namespace Examenapplicatie
             }
         }
 
-        private void windowMain_Activated(object sender, EventArgs e)
-        {
-            ForceToBackground();
-        }
 
-        private void testknop1_Click(object sender, EventArgs e)
-        {
-            changeBackground(0);  // OK
-        }
 
-        private void testknop2_Click(object sender, EventArgs e)
-        {
-            changeBackground(1);   //  NOK
-        }
-
-        private void testknop3_Click(object sender, EventArgs e)
+        private void ApplicatieOpstarten_Click(object sender, EventArgs e)
         {
             startClientApplication();
         }
@@ -120,6 +108,41 @@ namespace Examenapplicatie
         //
         //  Background methods
         //
+
+        // http://stackoverflow.com/questions/7162834/determine-if-current-application-is-activated-has-focus
+        /// Returns true if the current application has focus, false otherwise
+        private static bool ApplicationIsActivated()
+        {
+            bool activated = false;
+            var activatedHandle = GetForegroundWindow();
+            if (activatedHandle == IntPtr.Zero)
+            {
+                return false;       // No window is currently activated
+            }
+
+            int procId = Process.GetCurrentProcess().Id;
+            Process[] childProcesses = Process.GetProcessesByName(Resources.applicationProcessName); // all instances of the 
+
+            int activeProcId;
+            GetWindowThreadProcessId(activatedHandle, out activeProcId);
+
+            activated = activeProcId == procId; // check if host application is the active window
+
+            for (int i = 0; i < childProcesses.Length; i++)   // if not host, check if instance of host application is active window
+            {
+                if (childProcesses[i].Id == activeProcId)
+                {
+                    activated = true;
+                }
+            }
+
+            //TODO if verwijderen   -> toont welk process actief is wanneer achtergrond verandert
+            if (!activated)
+            {
+                MessageBox.Show(activeProcId.ToString());
+            }
+            return activated;
+        }
 
         public void changeBackground(byte state)
         {
@@ -181,6 +204,18 @@ namespace Examenapplicatie
             Application.Exit();
         }
 
+        private void ConstantLoop()
+        {
+            while (applicationRunning)  // constant checking
+            {
+                if (!ApplicationIsActivated())
+                {
+                    changeBackground(1);  // change background to NOK
+                }
+                Thread.Sleep(Int32.Parse(Resources.loopDuration) * 1000); // sleep for amount of seconds determined in resources to avoid computer overcharge
+            }
+        }
+
         private void ForceToBackground()  // force host application to background
         {
             SetWindowPos(Handle, HWND_BOTTOM, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE | SWP_NOACTIVATE);
@@ -201,7 +236,6 @@ namespace Examenapplicatie
             catch (Exception ex)
             {
                 Console.WriteLine("An error occurred!!!: " + ex.Message);
-                return;
             }
         }
 
@@ -239,6 +273,11 @@ namespace Examenapplicatie
             return false;
         }
 
+        private void windowMain_Activated(object sender, EventArgs e)
+        {
+            ForceToBackground();
+        }
+
         private void WindowsTaskbarDisable()
         {
             ShowWindow(FindWindow("Shell_TrayWnd", ""), SW_HIDE);
@@ -249,53 +288,11 @@ namespace Examenapplicatie
             ShowWindow(FindWindow("Shell_TrayWnd", ""), SW_SHOW);
         }
 
-        private void ConstantLoop()
-        {
-            while (applicationRunning)  // constant checking
-            {
-                if (!ApplicationIsActivated()) 
-                {
-                    changeBackground(1);  // change background to NOK
-                }
-                Thread.Sleep(Int32.Parse(Resources.loopDuration)*1000); // sleep for amount of seconds determined in resources to avoid computer overcharge
-            }
-        }
+        //
+        //  DLL Imports
+        //
 
-        // http://stackoverflow.com/questions/7162834/determine-if-current-application-is-activated-has-focus
-        /// <summary>Returns true if the current application has focus, false otherwise</summary>
-        private static bool ApplicationIsActivated()
-        {
-            bool activated = false;
-            var activatedHandle = GetForegroundWindow();
-            if (activatedHandle == IntPtr.Zero)
-            {
-                return false;       // No window is currently activated
-            }
-
-            int procId = Process.GetCurrentProcess().Id;
-            Process[] childProcesses = Process.GetProcessesByName(Resources.applicationProcessName); // all instances of the 
-
-            int activeProcId;
-            GetWindowThreadProcessId(activatedHandle, out activeProcId);
-
-            activated = activeProcId == procId; // check if host application is the active window
-
-            for (int i = 0; i < childProcesses.Length; i++)   // if not host, check if instance of host application is active window
-            {
-                if (childProcesses[i].Id== activeProcId)
-                {
-                    activated = true;
-                }
-            }
-
-            //TODO if verwijderen   -> toont welk process actief is wanneer achtergrond verandert
-            if (!activated) 
-            {
-                MessageBox.Show(activeProcId.ToString());
-            }
-            return activated;
-        }
-
+        // DLL imports for finding active process
         [DllImport("user32.dll", CharSet = CharSet.Auto, ExactSpelling = true)]
         private static extern IntPtr GetForegroundWindow();
 
