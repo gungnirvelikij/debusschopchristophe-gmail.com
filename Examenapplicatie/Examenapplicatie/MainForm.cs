@@ -23,18 +23,16 @@ namespace Examenapplicatie
         // Fields
         //
 
-
         private int teller = 0;
+
         private bool applicationRunning = true;
 
-        private byte stateBackground;  // 0 = OK, 1 = NOK, 2 = really NOK
+        private byte stateBackground; // 0 = OK, 1 = NOK, 2 = really NOK
 
-        private string clientApplicationPath = "..\\..\\..\\Geogebra\\GeoGebra.exe";  // 3 niveau's terug: Examenapplicatie\Examenapplicatie\bin\Debug\'app'.exe
         private string tempPath;
-        private string clientPath = "\\App\\" + Resources.applicationFileName;  // create client path name
+        private string clientPath = "\\App\\" + Resources.applicationFileName; // create client path name
 
         private Thread checkThread;
-        private Thread keyhookThread;
 
         //
         // Constructor
@@ -44,13 +42,14 @@ namespace Examenapplicatie
         {
             // create temppath
             tempPath = Path.GetTempPath(); // create temp path string 
-            tempPath = Path.Combine(tempPath, DateTime.Now.ToString("yyyyMdHHmmss")); // create unique folder in tempfolder
+            tempPath = Path.Combine(tempPath, DateTime.Now.ToString("yyyyMdHHmmss"));
+                // create unique folder in tempfolder
             Directory.CreateDirectory(tempPath);
 
             // close services
-            // disable internet: create vbs file in temp folder
+                // disable internet: create vbs file in temp folder
             File.WriteAllBytes(tempPath + "\\disableipv6.vbs", Resources.disableInternet); // copy zip into temp folder
-            // disable internet: execute vbs file in temp folder
+                // disable internet: execute vbs file in temp folder
             Process scriptProc = new Process();
             scriptProc.StartInfo.FileName = tempPath + "\\disableipv6.vbs";
             scriptProc.Start();
@@ -60,17 +59,18 @@ namespace Examenapplicatie
             // initialize main window
 
             InitializeComponent();
-            Cursor.Current = Cursors.AppStarting;  // create loading cursor
+            Cursor.Current = Cursors.AppStarting; // create loading cursor
 
-            
-            File.WriteAllBytes(tempPath+"\\app.zip", Resources.clientapplication); // copy zip into temp folder
+
+            File.WriteAllBytes(tempPath + "\\app.zip", Resources.clientapplication); // copy zip into temp folder
             string installpath = Path.Combine(tempPath, "App"); // create a folder to store host application in
-            ZipFile.ExtractToDirectory(tempPath + "\\app.zip", installpath); // extract zipfile with exe to tempfolder\App   exe has to be in upper directory of zipfile
+            ZipFile.ExtractToDirectory(tempPath + "\\app.zip", installpath);
+                // extract zipfile with exe to tempfolder\App   exe has to be in upper directory of zipfile
 
-            checkThread = new Thread(new ThreadStart(ConstantLoop)); 
-            checkThread.Start();             // create checking loop for checking if application or child has focus
+            checkThread = new Thread(new ThreadStart(ConstantLoop));
+            checkThread.Start(); // create checking loop for checking if application or child has focus
 
-            ForceToBackground();   // forcing host application to background
+            ForceToBackground(); // forcing host application to background
             Cursor.Current = Cursors.Default;
         }
 
@@ -80,24 +80,25 @@ namespace Examenapplicatie
 
         private void achtergrondHerstellenToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if(stateBackground==1 || stateBackground == 2)  // only show dialog when background has been changed to NOK or really NOK
+            if (stateBackground == 1 || stateBackground == 2)
+                // only show dialog when background has been changed to NOK or really NOK
             {
                 if (showPasswordInputBox())
                 {
-                    changeBackground(0);  // password is OK - background back to normal
+                    changeBackground(0); // password is OK - background back to normal
                 }
                 else
                 {
-                    changeBackground(2);  // student tried to cheat fill in password - background to double danger
+                    changeBackground(2); // student tried to cheat fill in password - background to double danger
                 }
             }
         }
 
-
-
         private void ApplicatieOpstarten_Click(object sender, EventArgs e)
         {
             startClientApplication();
+            ForceToBackground();
+                // make sure the main app is forced to the background to prevent previous instances of child app from being hidden
         }
 
         private void afsluitenToolStripMenuItem_Click(object sender, EventArgs e)
@@ -117,18 +118,20 @@ namespace Examenapplicatie
             var activatedHandle = GetForegroundWindow();
             if (activatedHandle == IntPtr.Zero)
             {
-                return false;       // No window is currently activated
+                return false; // No window is currently activated
             }
 
             int procId = Process.GetCurrentProcess().Id;
-            Process[] childProcesses = Process.GetProcessesByName(Resources.applicationProcessName); // all instances of the 
+            Process[] childProcesses = Process.GetProcessesByName(Resources.applicationProcessName);
+                // all instances of the 
 
             int activeProcId;
             GetWindowThreadProcessId(activatedHandle, out activeProcId);
 
             activated = activeProcId == procId; // check if host application is the active window
 
-            for (int i = 0; i < childProcesses.Length; i++)   // if not host, check if instance of host application is active window
+            for (int i = 0; i < childProcesses.Length; i++)
+                // if not host, check if instance of host application is active window
             {
                 if (childProcesses[i].Id == activeProcId)
                 {
@@ -136,11 +139,11 @@ namespace Examenapplicatie
                 }
             }
 
-            //TODO if verwijderen   -> toont welk process actief is wanneer achtergrond verandert
-            if (!activated)
-            {
-                MessageBox.Show(activeProcId.ToString());
-            }
+            //test IF   -> toont welk process actief is wanneer achtergrond verandert
+            //if (!activated)
+            //{
+            //    MessageBox.Show(activeProcId.ToString());
+            //}
             return activated;
         }
 
@@ -148,7 +151,7 @@ namespace Examenapplicatie
         {
             switch (state)
             {
-                case 0:  // state is OK -> normal background
+                case 0: // state is OK -> normal background
                     try
                     {
                         BackgroundImage = Resources.backgroundOK;
@@ -157,8 +160,9 @@ namespace Examenapplicatie
                     {
                         MessageBox.Show("Backgroundimage not found");
                     }
+                    ForceToBackground();
                     break;
-                case 1:  // state is OK -> normal background
+                case 1: // state is NOK -> NOK background
                     try
                     {
                         BackgroundImage = Resources.backgroundNOK;
@@ -168,7 +172,7 @@ namespace Examenapplicatie
                         MessageBox.Show("Backgroundimage not found");
                     }
                     break;
-                case 2:  // state is OK -> normal background
+                case 2: // state is really NOK (wrong password entered) -> really NOK background
                     try
                     {
                         BackgroundImage = Resources.backgroundReallyNOK;
@@ -188,7 +192,8 @@ namespace Examenapplicatie
 
             // close all instances of the child application
             Process[] childProcesses = Process.GetProcessesByName(Resources.applicationProcessName);
-            for (int i = 0; i < childProcesses.Length; i++)   // if not host, check if instance of host application is active window
+            for (int i = 0; i < childProcesses.Length; i++)
+                // if not host, check if instance of host application is active window
             {
                 childProcesses[i].Kill();
             }
@@ -206,7 +211,15 @@ namespace Examenapplicatie
             scriptProc.WaitForExit();
             scriptProc.Close();
 
-            Directory.Delete(tempPath, true);  // delete temp folder
+            try
+            {
+                Directory.Delete(tempPath, true);  // delete temp folder
+            }
+            catch (Exception)
+            {
+                
+                throw;
+            }
             
             Application.Exit();
         }
@@ -225,7 +238,10 @@ namespace Examenapplicatie
 
         private void ForceToBackground()  // force host application to background
         {
-            SetWindowPos(Handle, HWND_BOTTOM, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE | SWP_NOACTIVATE);
+            if (stateBackground == 0)
+            {
+                SetWindowPos(Handle, HWND_BOTTOM, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE | SWP_NOACTIVATE);
+            }
         }
 
         // http://stackoverflow.com/questions/1112981/how-do-i-launch-application-one-from-another-in-c
