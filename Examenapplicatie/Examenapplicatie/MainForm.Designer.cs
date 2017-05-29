@@ -35,6 +35,7 @@
             this.afsluitenToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.panel_childApplication = new System.Windows.Forms.Panel();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
+            this.toonLogToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.tableLayoutPanel1.SuspendLayout();
             this.SuspendLayout();
@@ -53,6 +54,7 @@
             // 
             this.startToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.achtergrondHerstellenToolStripMenuItem,
+            this.toonLogToolStripMenuItem,
             this.afsluitenToolStripMenuItem});
             this.startToolStripMenuItem.Name = "startToolStripMenuItem";
             this.startToolStripMenuItem.Size = new System.Drawing.Size(43, 20);
@@ -97,6 +99,13 @@
             this.tableLayoutPanel1.Size = new System.Drawing.Size(926, 403);
             this.tableLayoutPanel1.TabIndex = 2;
             // 
+            // toonLogToolStripMenuItem
+            // 
+            this.toonLogToolStripMenuItem.Name = "toonLogToolStripMenuItem";
+            this.toonLogToolStripMenuItem.Size = new System.Drawing.Size(195, 22);
+            this.toonLogToolStripMenuItem.Text = "Toon log";
+            this.toonLogToolStripMenuItem.Click += new System.EventHandler(this.toonLogToolStripMenuItem_Click);
+            // 
             // windowMain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -127,6 +136,7 @@
         private System.Windows.Forms.ToolStripMenuItem afsluitenToolStripMenuItem;
         private System.Windows.Forms.Panel panel_childApplication;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
+        private System.Windows.Forms.ToolStripMenuItem toonLogToolStripMenuItem;
     }
 }
 

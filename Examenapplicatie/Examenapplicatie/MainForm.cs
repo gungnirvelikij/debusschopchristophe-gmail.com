@@ -17,9 +17,6 @@ namespace Examenapplicatie
         //
         // Fields
         //
-
-        private int teller = 0;
-
         private bool applicationRunning = true;
 
         private byte stateBackground; // 0 = OK, 1 = NOK, 2 = really NOK  
@@ -63,7 +60,7 @@ namespace Examenapplicatie
             //check if this application has already been used today -> if yes: start with NOK background
             try
             {
-                using (RegistryKey key = Registry.CurrentUser.OpenSubKey("LastTimeUsed", true))
+                using (RegistryKey key = Registry.CurrentUser.OpenSubKey("Examenapp", true))
                 {
                     if (key != null)
                     {
@@ -73,16 +70,18 @@ namespace Examenapplicatie
                             changeBackground(1);
                         }
                         key.SetValue("Used", DateTime.Now.ToString("yyyyMd"));   
-                        key.SetValue("Log", key.GetValue("Log") + " / " + DateTime.Now.ToString("yyyyMdHHmmss"));   
+                        key.SetValue("Log", key.GetValue("Log") + " / " + DateTime.Now.ToString("yyyyMdHHmmss"));
                         //add current timestamp to log
                         key.Close();
                     }
                     else
                     {
                         // write to registry to show the application has already been started on this machine.
-                        RegistryKey lastTimeUsedRegistryKey = Registry.CurrentUser.CreateSubKey("LastTimeUsed");
+                        RegistryKey lastTimeUsedRegistryKey = Registry.CurrentUser.CreateSubKey("Examenapp");
                         lastTimeUsedRegistryKey.SetValue("Used", DateTime.Now.ToString("yyyyMd"));
                         lastTimeUsedRegistryKey.SetValue("Log", DateTime.Now.ToString("yyyyMdHHmmss")); //add current timestamp to log    
+                        lastTimeUsedRegistryKey.SetValue("Process", "");
+                        lastTimeUsedRegistryKey.SetValue("Password", "");
                         lastTimeUsedRegistryKey.Close();
                     }
                 }
@@ -133,6 +132,14 @@ namespace Examenapplicatie
             closeApplication();
         }
 
+        private void toonLogToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (showPasswordInputBox())
+            {
+                showLogMessageBox();
+            }
+        }
+
         //
         //  Background methods
         //
@@ -167,10 +174,11 @@ namespace Examenapplicatie
             }
 
             //test IF   -> toont welk process actief is wanneer achtergrond verandert
-            //if (!activated)
-            //{
-            //    MessageBox.Show(activeProcId.ToString());
-            //}
+            if (!activated)
+            {
+            using (RegistryKey key = Registry.CurrentUser.OpenSubKey("Examenapp", true))
+                key.SetValue("Process", key.GetValue("Process") + " / " + Process.GetCurrentProcess().ProcessName + ": " + DateTime.Now.ToString("yyyyMdHHmmss"));  // add active process to registry log
+            }
             return activated;
         }
 
@@ -271,6 +279,23 @@ namespace Examenapplicatie
             }
         }
 
+        private void showLogMessageBox()
+        {
+            string OpenedToday = "Vandaag open gedaan om: ";
+            string backgroundChanged = "Actieve processen: ";
+            string wrongPasswordEntered = "Verkeerd wachtwoord ingegeven om: ";
+
+            // strings nog aanvullen met register
+            using (RegistryKey key = Registry.CurrentUser.OpenSubKey("Examenapp"))
+            {
+                OpenedToday += key.GetValue("Log").ToString();
+                backgroundChanged += key.GetValue("Process").ToString();
+                wrongPasswordEntered += key.GetValue("Password").ToString();
+            }
+            
+            MessageBox.Show(OpenedToday + "\n" + backgroundChanged + "\n" + wrongPasswordEntered, "Log van vandaag");
+        }
+
         //http://stackoverflow.com/questions/97097/what-is-the-c-sharp-version-of-vb-nets-inputdialog
         private static bool showPasswordInputBox()
         {
@@ -301,6 +326,11 @@ namespace Examenapplicatie
             if (textBox.Text.Equals(Resources.password))
             {
                 return true;
+            }
+            else
+            {
+                using (RegistryKey key = Registry.CurrentUser.OpenSubKey("Examenapp", true))
+                    key.SetValue("Password", key.GetValue("Background") + " / " + DateTime.Now.ToString("yyyyMdHHmmss"));
             }
             return false;
         }
