@@ -1,5 +1,6 @@
 ﻿using System;
 using System.CodeDom;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
 using System.IO;
@@ -68,18 +69,24 @@ namespace Examenapplicatie
                         if (o.ToString() == DateTime.Now.ToString("yyyyMd"))
                         {
                             changeBackground(1);
+                            key.SetValue("Log", key.GetValue("Log") + DateTime.Now.ToString("hh:mm:ss") + " / ");
                         }
-                        key.SetValue("Used", DateTime.Now.ToString("yyyyMd"));   
-                        key.SetValue("Log", key.GetValue("Log") + " / " + DateTime.Now.ToString("yyyyMdHHmmss"));
-                        //add current timestamp to log
+                        else  // clean log if this is the first time the application is opened today
+                        {
+                            key.SetValue("Used", DateTime.Now.ToString("yyyyMd"));
+                            key.SetValue("Log", DateTime.Now.ToString("hh:mm:ss") + " / ");
+                            key.SetValue("Process", "");
+                            key.SetValue("Password", "");
+                        }
                         key.Close();
+
                     }
                     else
                     {
                         // write to registry to show the application has already been started on this machine.
                         RegistryKey lastTimeUsedRegistryKey = Registry.CurrentUser.CreateSubKey("Examenapp");
                         lastTimeUsedRegistryKey.SetValue("Used", DateTime.Now.ToString("yyyyMd"));
-                        lastTimeUsedRegistryKey.SetValue("Log", DateTime.Now.ToString("yyyyMdHHmmss")); //add current timestamp to log    
+                        lastTimeUsedRegistryKey.SetValue("Log", DateTime.Now.ToString("hh:mm:ss") + " / "); //add current timestamp to log    
                         lastTimeUsedRegistryKey.SetValue("Process", "");
                         lastTimeUsedRegistryKey.SetValue("Password", "");
                         lastTimeUsedRegistryKey.Close();
@@ -176,49 +183,54 @@ namespace Examenapplicatie
             //test IF   -> toont welk process actief is wanneer achtergrond verandert
             if (!activated)
             {
-            using (RegistryKey key = Registry.CurrentUser.OpenSubKey("Examenapp", true))
-                key.SetValue("Process", key.GetValue("Process") + " / " + Process.GetCurrentProcess().ProcessName + ": " + DateTime.Now.ToString("yyyyMdHHmmss"));  // add active process to registry log
             }
             return activated;
         }
 
         public void changeBackground(byte state)
         {
-            switch (state)
+            if (stateBackground != state)  // if to prevent action when background is already in correct state
             {
-                case 0: // state is OK -> normal background
-                    try
-                    {
-                        BackgroundImage = Resources.backgroundOK;
-                    }
-                    catch (System.IO.FileNotFoundException)
-                    {
-                        MessageBox.Show("Backgroundimage not found");
-                    }
-                    ForceToBackground();
-                    break;
-                case 1: // state is NOK -> NOK background
-                    try
-                    {
-                        BackgroundImage = Resources.backgroundNOK;
-                    }
-                    catch (System.IO.FileNotFoundException)
-                    {
-                        MessageBox.Show("Backgroundimage not found");
-                    }
-                    break;
-                case 2: // state is really NOK (wrong password entered) -> really NOK background
-                    try
-                    {
-                        BackgroundImage = Resources.backgroundReallyNOK;
-                    }
-                    catch (System.IO.FileNotFoundException)
-                    {
-                        MessageBox.Show("Backgroundimage not found");
-                    }
-                    break;
+                switch (state)
+                {
+                    case 0: // state is OK -> normal background
+                        try
+                        {
+                            BackgroundImage = Resources.backgroundOK;
+                        }
+                        catch (System.IO.FileNotFoundException)
+                        {
+                            MessageBox.Show("Backgroundimage not found");
+                        }
+                        ForceToBackground();
+                        break;
+                    case 1: // state is NOK -> NOK background
+                        try
+                        {
+                            BackgroundImage = Resources.backgroundNOK;
+                        }
+                        catch (System.IO.FileNotFoundException)
+                        {
+                            MessageBox.Show("Backgroundimage not found");
+                        }
+                        using (RegistryKey key = Registry.CurrentUser.OpenSubKey("Examenapp", true))
+                        {
+                            key.SetValue("Process", key.GetValue("Process") + GetActiveProcessName() + ": " + DateTime.Now.ToString("hh:mm:ss") + " /");  // add active process to registry log
+                        }
+                        break;
+                    case 2: // state is really NOK (wrong password entered) -> really NOK background
+                        try
+                        {
+                            BackgroundImage = Resources.backgroundReallyNOK;
+                        }
+                        catch (System.IO.FileNotFoundException)
+                        {
+                            MessageBox.Show("Backgroundimage not found");
+                        }
+                        break;
+                }
+                stateBackground = state;
             }
-            stateBackground = state;
         }
 
         private void closeApplication()
@@ -279,21 +291,28 @@ namespace Examenapplicatie
             }
         }
 
+        private string GetActiveProcessName()
+        {
+            var activatedHandle = GetForegroundWindow();
+            int activeProcId;
+            GetWindowThreadProcessId(activatedHandle, out activeProcId);
+            return Process.GetProcessById(activeProcId).ProcessName;
+        }
+
         private void showLogMessageBox()
         {
-            string OpenedToday = "Vandaag open gedaan om: ";
+            string opened = "Open gedaan om: ";
             string backgroundChanged = "Actieve processen: ";
             string wrongPasswordEntered = "Verkeerd wachtwoord ingegeven om: ";
 
-            // strings nog aanvullen met register
             using (RegistryKey key = Registry.CurrentUser.OpenSubKey("Examenapp"))
             {
-                OpenedToday += key.GetValue("Log").ToString();
+                opened += key.GetValue("Log").ToString();
                 backgroundChanged += key.GetValue("Process").ToString();
                 wrongPasswordEntered += key.GetValue("Password").ToString();
             }
             
-            MessageBox.Show(OpenedToday + "\n" + backgroundChanged + "\n" + wrongPasswordEntered, "Log van vandaag");
+            MessageBox.Show(opened + "\n" + backgroundChanged + "\n" + wrongPasswordEntered, "Log");
         }
 
         //http://stackoverflow.com/questions/97097/what-is-the-c-sharp-version-of-vb-nets-inputdialog
@@ -330,7 +349,7 @@ namespace Examenapplicatie
             else
             {
                 using (RegistryKey key = Registry.CurrentUser.OpenSubKey("Examenapp", true))
-                    key.SetValue("Password", key.GetValue("Background") + " / " + DateTime.Now.ToString("yyyyMdHHmmss"));
+                    key.SetValue("Password", key.GetValue("Background") + DateTime.Now.ToString("hh:mm:ss") + " / ");
             }
             return false;
         }
