@@ -1,4 +1,5 @@
 ﻿using System;
+using System.CodeDom;
 using System.Diagnostics;
 using System.Drawing;
 using System.IO;
@@ -63,7 +64,7 @@ namespace Examenapplicatie
             //check if this application has already been used today -> if yes: start with NOK background
             try
             {
-                using (RegistryKey key = Registry.CurrentUser.OpenSubKey("LastTimeUsed"))
+                using (RegistryKey key = Registry.CurrentUser.OpenSubKey("LastTimeUsed", true))
                 {
                     if (key != null)
                     {
@@ -71,23 +72,24 @@ namespace Examenapplicatie
                         if (o.ToString() == DateTime.Now.ToString("yyyyMd"))
                         {
                             changeBackground(1);
-                            key.SetValue("Log", key.GetValue("Log") + " / !!!" + DateTime.Now.ToString("yyyyMdHHmmss"), RegistryValueKind.String); //add current timestamp to log with exlamation marks to show multiple times opened this day
-                            key.Close();
                         }
+                        key.SetValue("Used", DateTime.Now.ToString("yyyyMd"));   
+                        key.SetValue("Log", key.GetValue("Log") + " / " + DateTime.Now.ToString("yyyyMdHHmmss"));   
+                        //add current timestamp to log
+                        key.Close();
                     }
                     else
                     {
                         // write to registry to show the application has already been started on this machine.
                         RegistryKey lastTimeUsedRegistryKey = Registry.CurrentUser.CreateSubKey("LastTimeUsed");
                         lastTimeUsedRegistryKey.SetValue("Used", DateTime.Now.ToString("yyyyMd"));
-                        lastTimeUsedRegistryKey.SetValue("Log", lastTimeUsedRegistryKey.GetValue("Log") + " / " + DateTime.Now.ToString("yyyyMdHHmmss"), RegistryValueKind.String); //add current timestamp to log    
+                        lastTimeUsedRegistryKey.SetValue("Log", DateTime.Now.ToString("yyyyMdHHmmss")); //add current timestamp to log    
                         lastTimeUsedRegistryKey.Close();
                     }
                 }
             }
-            catch (Exception ex)  
+            catch (Exception ex)
             {
-                //
             }
 
             // write to registry to show the application has already been started on this machine.
