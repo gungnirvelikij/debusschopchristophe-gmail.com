@@ -58,8 +58,7 @@ namespace Examenapplicatie
 
             File.WriteAllBytes(tempPath + "\\app.zip", Resources.clientapplication); // copy zip into temp folder
             string installpath = Path.Combine(tempPath, "App"); // create a folder to store host application in
-            ZipFile.ExtractToDirectory(tempPath + "\\app.zip", installpath);
-            // extract zipfile with exe to tempfolder\App   exe has to be in upper directory of zipfile
+            ZipFile.ExtractToDirectory(tempPath + "\\app.zip", installpath); // extract zipfile with exe to tempfolder\App   exe has to be in upper directory of zipfile
 
             //check if this application has already been used today -> if yes: start with NOK background
             try
@@ -92,9 +91,6 @@ namespace Examenapplicatie
             {
             }
 
-            // write to registry to show the application has already been started on this machine.
-
-
             foreach (var process in Process.GetProcessesByName(Resources.applicationProcessName))  // kill all processes with the same name as the child beforehand
             {
                 process.Kill();
@@ -109,6 +105,7 @@ namespace Examenapplicatie
             checkThread.Start(); // create checking loop for checking if application or child has focus
 
             Cursor.Current = Cursors.Default;
+            WindowsTaskbarDisable();
         }
 
         //
