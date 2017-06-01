@@ -144,15 +144,15 @@
   <data name="enableInternet" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\enableInternet.vbs;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
-  <data name="firstTimeOpened" xml:space="preserve">
-    <value>1</value>
-    <comment>1 = true, 0 = false</comment>
-  </data>
   <data name="loopDuration" xml:space="preserve">
     <value>2</value>
     <comment>seconds before new loop is launched</comment>
   </data>
   <data name="password" xml:space="preserve">
     <value>123456</value>
+  </data>
+  <data name="startupTimeout" xml:space="preserve">
+    <value>15</value>
+    <comment>seconds between start child application and linking it to panel</comment>
   </data>
 </root>

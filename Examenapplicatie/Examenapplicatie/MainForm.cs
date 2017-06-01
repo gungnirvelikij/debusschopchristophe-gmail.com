@@ -103,7 +103,7 @@ namespace Examenapplicatie
             }
 
             Process p = Process.Start(tempPath + clientPath);  // start child application
-            Thread.Sleep(10000); // give the application enough time to completely load, this has to be finished by the time the next line is read
+            Thread.Sleep(Int32.Parse(Resources.startupTimeout)*1000); // give the application enough time to completely load, this has to be finished by the time the next line is read
             Process[] childProcesses = Process.GetProcessesByName(Resources.applicationProcessName);
             SetParent(childProcesses[0].MainWindowHandle, panel_childApplication.Handle);
 
