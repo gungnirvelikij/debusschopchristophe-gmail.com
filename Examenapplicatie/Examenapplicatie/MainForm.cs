@@ -1,6 +1,4 @@
 ﻿using System;
-using System.CodeDom;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
 using System.IO;
@@ -264,7 +262,6 @@ namespace Examenapplicatie
             }
             catch (Exception)
             {
-                
                 throw;
             }
             
@@ -311,7 +308,6 @@ namespace Examenapplicatie
                 backgroundChanged += key.GetValue("Process").ToString();
                 wrongPasswordEntered += key.GetValue("Password").ToString();
             }
-            
             MessageBox.Show(opened + "\n" + backgroundChanged + "\n" + wrongPasswordEntered, "Log");
         }
 
